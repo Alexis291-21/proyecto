@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: laravel-app
+    runtime: php
+    buildCommand: |
+      composer install --no-dev --optimize-autoloader
+      php artisan config:clear
+      php artisan route:clear
+      php artisan view:cache
+    staticPublishPath: public
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        value: base64:Dj8eR7knSzj1m0VAsSThHEl5HkVSvoeJg+eE5ZaVJz4=
+      - key: APP_URL
+        value: https://tu-app-en-render.onrender.com  # Puedes cambiarlo después
