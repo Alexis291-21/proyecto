@@ -111,16 +111,6 @@
 
             @if(in_array($r, ['recepcionista','medico','admin']))
             <li>
-                <a href="{{ url('/calendario') }}"
-                   class="flex items-center px-4 py-2 rounded-r {{ Request::is('calendario') ? 'bg-[#4E2C8A] border-l-4 border-white font-semibold' : 'hover:bg-[#4E2C8A]/80' }}">
-                    <i class="fa-solid fa-calendar-days mr-3"></i>
-                    <span x-show="!sidebarCollapsed">Calendario</span>
-                </a>
-            </li>
-            @endif
-
-            @if(in_array($r, ['recepcionista','medico','admin']))
-            <li>
                 <a href="{{ url('/atenciones') }}"
                    class="flex items-center px-4 py-2 rounded-r {{ Request::is('atenciones*') ? 'bg-[#4E2C8A] border-l-4 border-white font-semibold' : 'hover:bg-[#4E2C8A]/80' }}">
                     <i class="fa-solid fa-notes-medical text-lg mr-3"></i>

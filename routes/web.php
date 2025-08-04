@@ -8,11 +8,7 @@ use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\CitaMedicaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HorarioController;
-use App\Http\Controllers\EmailController;
 use App\Http\Controllers\AtencionesController;
-use App\Http\Controllers\AtencionesPruebasController;
-use App\Http\Controllers\AtencionesLaboratorioController;
-use App\Http\Controllers\CalendarioController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingController;
 
@@ -39,12 +35,8 @@ Route::get('/citas/{id}/recordar', [CitaMedicaController::class, 'recordarForm']
 Route::get('/', function () {
     return redirect()->route('citas.index');
 });
-// Vista de calendario
-Route::get('/calendario', [CalendarioController::class, 'index'])
-     ->name('calendario.index');
 
 Route::middleware(['auth'])->group(function () {
-
     // FORMULARIO cambiar contraseña:
     Route::get('/profile/password', [ProfileController::class, 'editPassword'])
          ->name('profile.password.edit');
@@ -92,42 +84,9 @@ Route::middleware(['auth'])->group(function() {
 // Procesar la actualización del perfil
 Route::put('/perfil', [ProfileController::class, 'update'])
      ->name('profile.update');
-// Eventos JSON
-Route::get('/calendario/eventos', [CalendarioController::class, 'eventos'])
-     ->name('calendario.eventos');
-Route::patch('/calendario/eventos/{id}', [CalendarioController::class, 'reprogramar'])
-     ->name('calendario.reprogramar');
-// Reprogramar cita (PATCH AJAX)
-Route::patch('/calendario/eventos/{id}', [CalendarioController::class, 'reprogramar'])
-     ->name('calendario.reprogramar');
 // CRUD completo con resource
 Route::put('horarios/update-masivo', [HorarioController::class, 'updateMasivo'])
      ->name('horarios.updateMasivo');
-Route::resource('atenciones-pruebas', AtencionesPruebasController::class)
-     ->only(['index', 'store', 'destroy']);
-Route::put('/pruebas/{prueba}/atender', [AtencionesPruebasController::class, 'atender'])
-    ->name('pruebas.atendida');
-    Route::delete('/pruebas/{prueba}', [AtencionesPruebasController::class, 'destroy'])
-    ->name('pruebas.destroy');
-    Route::get('/atenciones-laboratorio', [AtencionesLaboratorioController::class, 'index'])
-    ->name('atenciones-laboratorio.index');
-Route::post('/atenciones-laboratorio', [AtencionesLaboratorioController::class, 'store'])
-    ->name('atenciones-laboratorio.store');
-    Route::put('/atenciones-laboratorio/{laboratorio}/atender', [AtencionesLaboratorioController::class, 'atender'])
-    ->name('atenciones-laboratorio.atender');
-    Route::delete('/atenciones-laboratorio/{laboratorio}', [AtencionesLaboratorioController::class, 'destroy'])
-    ->name('atenciones-laboratorio.destroy');
-// — Si quieres index y store, podrías registrar estas dos también:
-Route::get('/atenciones-pruebas', [AtencionesPruebasController::class, 'index'])
-    ->name('atenciones-pruebas.index');
-Route::post('/pruebas', [AtencionesPruebasController::class, 'store'])
-    ->name('pruebas.store');
-// Ruta para marcar como atendida
-Route::post(
-    'atenciones-pruebas/{prueba}/atender',
-    [AtencionesPruebasController::class, 'atender']
-)->name('atenciones-pruebas.atender');
-Route::resource('laboratorio', AtencionesLaboratorioController::class);
 Route::post('/horarios/guardar', [HorarioController::class, 'guardarCambios'])->name('horarios.guardarCambios');
 Route::get('/horarios', [HorarioController::class, 'index'])->name('horarios.index');
 Route::get('/horarios/{medico_id}', [HorarioController::class, 'getHorarios']);
@@ -146,13 +105,6 @@ Route::resource('citas', CitaMedicaController::class);
 Route::post('/emails/{id}/recordatorio', [CitaMedicaController::class, 'enviarRecordatorio'])->name('emails.recordatorio');
 Route::post('/citas/{id}/recordar', [CitaMedicaController::class, 'recordar'])->name('citas.reminder');
 Route::get('/reportes/resumen', [ReporteController::class, 'resumenGeneral'])->name('reportes.resumen');
-Route::post('emails/enviar', [EmailController::class, 'enviar'])
-     ->name('emails.enviar');
-Route::resource('pruebas', AtencionesPruebasController::class);
-Route::resource('laboratorio', AtencionesLaboratorioController::class)
-     ->only(['index','store']);
-Route::post('/pruebas/{id}/atendida', [AtencionesPruebasController::class, 'marcarAtendida'])
-    ->name('pruebas.marcarAtendida');
 // web.php
 Route::get('/citas/exportar/excel', [CitaMedicaController::class, 'exportarExcel'])->name('citas.exportar.excel');
 Route::get('/citas/exportar/pdf', [CitaMedicaController::class, 'exportarPDF'])->name('citas.exportar.pdf');
@@ -178,8 +130,6 @@ Route::delete('/cita/{id}/cancelar', [CitaMedicaController::class, 'cancelarCita
 Route::delete('/citas/{id}/cancel', [CitaMedicaController::class, 'destroy'])->name('citas.cancel');
 Route::resource('citas', CitaMedicaController::class);
 Route::middleware(['auth'])->group(function () {
-    // ... tus otras rutas de atenciones
-
     // Ruta para marcar como atendida
     Route::put('atenciones/{atencion}/atendida', [AtencionesController::class, 'marcarAtendida'])
          ->name('atenciones.atendida');
