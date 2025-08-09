@@ -71,7 +71,7 @@
             {{-- Flecha debajo del contenedor --}}
             <div
               class="absolute w-4 h-4 bg-white border-l border-t border-gray-200
-                     transform rotate-45 shadow-lg -bottom-2 left-1/2 -translate-x-1/2"
+                     transform rotate-45 shadow-full -bottom-2 left-1/2 -translate-x-1/2"
             ></div>
           </div>
         </div>
@@ -301,7 +301,7 @@
       <img
         src="{{ Auth::user()->avatar_url }}"
         alt="Avatar de {{ Auth::user()->name }}"
-        class="w-32 h-32 rounded-full object-cover"
+        class="w-[500px] h-[500px] object-cover"
       />
     </div>
 
