@@ -35,7 +35,7 @@
         <div class="bg-white rounded-lg shadow-md p-5 flex items-center">
             <div class="flex-1">
                 <h2 class="text-sm font-medium text-gray-600 uppercase">Citas Confirmadas</h2>
-                <p class="text-2xl font-semibold text-green-600 mt-1">{{ number_format($porcentajeConfirmadas, 2) }}%</p>
+                <p class="text-2xl font-semibold text-green-600 mt-1">{{ number_format($porcentajeConfirmadas ?? 0, 2) }}%</p>
             </div>
             <div class="flex-shrink-0">
                 <svg class="w-8 h-8 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -46,7 +46,7 @@
         <div class="bg-white rounded-lg shadow-md p-5 flex items-center">
             <div class="flex-1">
                 <h2 class="text-sm font-medium text-gray-600 uppercase">Citas Canceladas</h2>
-                <p class="text-2xl font-semibold text-red-600 mt-1">{{ number_format($porcentajeCanceladas, 2) }}%</p>
+                <p class="text-2xl font-semibold text-red-600 mt-1">{{ number_format($porcentajeCanceladas ?? 0, 2) }}%</p>
             </div>
             <div class="flex-shrink-0">
                 <svg class="w-8 h-8 text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -71,7 +71,7 @@
             ❌
         </button>
         <h2 class="text-xl font-semibold text-gray-800 mb-4">📅 Detalle de Citas Confirmadas</h2>
-        @php $totalC = collect($citas_confirmadas)->sum('count'); @endphp
+        @php $totalC = collect($citas_confirmadas ?? [])->sum('count'); @endphp
         <div class="overflow-auto max-h-80">
             <table class="w-full text-sm text-left border-collapse">
                 <thead>
@@ -83,12 +83,23 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($citas_confirmadas as $item)
+                    @foreach($citas_confirmadas ?? [] as $item)
                         <tr class="hover:bg-gray-50">
-                            <td class="p-2">{{ $item->paciente }}</td>
-                            <td class="p-2">{{ \Carbon\Carbon::parse($item->fecha)->format('d/m/Y') }}</td>
-                            <td class="p-2">{{ $item->count }}</td>
-                            <td class="p-2">{{ number_format($totalC ? $item->count / $totalC * 100 : 0, 2) }}%</td>
+                            <td class="p-2">
+                                @if(!empty($item->paciente))
+                                    {{ $item->paciente }}
+                                @else
+                                    {{ trim(($item->nombre ?? '') . ' ' . ($item->apellido_paterno ?? '') . ' ' . ($item->apellido_materno ?? '')) ?: '—' }}
+                                @endif
+                            </td>
+                            <td class="p-2">
+                                @php
+                                    $f = $item->fecha ?? ($item->periodo ?? null);
+                                @endphp
+                                {{ $f ? \Carbon\Carbon::parse($f)->format('d/m/Y') : '—' }}
+                            </td>
+                            <td class="p-2">{{ $item->count ?? 0 }}</td>
+                            <td class="p-2">{{ number_format($totalC ? ($item->count / $totalC * 100) : 0, 2) }}%</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -105,7 +116,7 @@
             ❌
         </button>
         <h2 class="text-xl font-semibold text-gray-800 mb-4">📅 Detalle de Citas Canceladas</h2>
-        @php $totalX = collect($citas_canceladas)->sum('count'); @endphp
+        @php $totalX = collect($citas_canceladas ?? [])->sum('count'); @endphp
         <div class="overflow-auto max-h-80">
             <table class="w-full text-sm text-left border-collapse">
                 <thead>
@@ -117,12 +128,23 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($citas_canceladas as $item)
+                    @foreach($citas_canceladas ?? [] as $item)
                         <tr class="hover:bg-gray-50">
-                            <td class="p-2">{{ $item->paciente }}</td>
-                            <td class="p-2">{{ \Carbon\Carbon::parse($item->fecha)->format('d/m/Y') }}</td>
-                            <td class="p-2">{{ $item->count }}</td>
-                            <td class="p-2">{{ number_format($totalX ? $item->count / $totalX * 100 : 0, 2) }}%</td>
+                            <td class="p-2">
+                                @if(!empty($item->paciente))
+                                    {{ $item->paciente }}
+                                @else
+                                    {{ trim(($item->nombre ?? '') . ' ' . ($item->apellido_paterno ?? '') . ' ' . ($item->apellido_materno ?? '')) ?: '—' }}
+                                @endif
+                            </td>
+                            <td class="p-2">
+                                @php
+                                    $f = $item->fecha ?? ($item->periodo ?? null);
+                                @endphp
+                                {{ $f ? \Carbon\Carbon::parse($f)->format('d/m/Y') : '—' }}
+                            </td>
+                            <td class="p-2">{{ $item->count ?? 0 }}</td>
+                            <td class="p-2">{{ number_format($totalX ? ($item->count / $totalX * 100) : 0, 2) }}%</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -133,21 +155,19 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const confirmadas = @json($citas_confirmadas);
-    const canceladas  = @json($citas_canceladas);
-    const totalC      = confirmadas.reduce((sum, it) => sum + it.count, 0);
-    const totalX      = canceladas.reduce((sum, it) => sum + it.count, 0);
-    const data        = [
-        totalC / (totalC + totalX) * 100,
-        totalX / (totalC + totalX) * 100
-    ];
+    const confirmadas = @json($citas_confirmadas ?? []);
+    const canceladas  = @json($citas_canceladas ?? []);
+    const totalC      = confirmadas.reduce((sum, it) => sum + (it.count || 0), 0);
+    const totalX      = canceladas.reduce((sum, it) => sum + (it.count || 0), 0);
+    const totalAll    = totalC + totalX;
+    const data = totalAll ? [ (totalC/totalAll)*100, (totalX/totalAll)*100 ] : [0,0];
 
     new Chart(document.getElementById('totalesChart'), {
         type: 'bar',
         data: {
             labels: ['Confirmadas', 'Canceladas'],
             datasets: [{
-                data: data.map(d => d.toFixed(2)),
+                data: data.map(d => Number(d.toFixed(2))),
                 backgroundColor: ['#34D399', '#F87171'],
                 borderRadius: 6,
                 maxBarThickness: 60,
@@ -171,10 +191,10 @@
     });
 
     function mostrarModalConfirmadas() {
-        if (confirmadas.length) document.getElementById('modalConfirmadas').showModal();
+        if ((confirmadas || []).length) document.getElementById('modalConfirmadas').showModal();
     }
     function mostrarModalCanceladas() {
-        if (canceladas.length) document.getElementById('modalCanceladas').showModal();
+        if ((canceladas || []).length) document.getElementById('modalCanceladas').showModal();
     }
 </script>
 @endsection
