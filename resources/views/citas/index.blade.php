@@ -1,7 +1,9 @@
 {{-- resources/views/citas/index.blade.php --}}
 @extends('main')
 
-@section('title', 'Citas Médicas')
+@section('title')
+    Citas Médicas
+@endsection
 
 @section('content')
 <div class="w-full p-8 bg-gray-50">
