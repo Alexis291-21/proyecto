@@ -202,7 +202,14 @@ $(function(){
         dom: '<"flex justify-between items-center mb-2"lf>rt<"flex justify-between items-center mt-4"ip><"clear">',
         ordering: false,
         buttons: [
-            { extend: 'excelHtml5', exportOptions: { columns: [0,1,2,3,4,5,6] }, className: 'd-none' },
+            {
+                extend: 'excelHtml5',
+                title: '',
+                filename: 'Pacientes',
+                exportOptions: { columns: [0,1,2,3,4,5,6] },
+                className: 'd-none',
+                customizeData: d => d.header[0][0] = 'Pacientes'
+            },
             { extend: 'pdfHtml5',   exportOptions: { columns: [0,1,2,3,4,5,6] }, className: 'd-none' }
         ],
         language: {
@@ -276,7 +283,7 @@ $(function(){
         $('#inputDireccion').val(p.direccion);
         $('#inputDni').val(p.dni);
 
-        // 5) Formatear fecha de nacimiento en YYYY‑MM‑DD
+        // 5) Formatear fecha de nacimiento en YYYY-MM-DD
         let fechaIso = p.fecha_nacimiento.split('T')[0];
         $('#inputFN').val(fechaIso);
 

@@ -1,6 +1,8 @@
 @extends('main')
 
-@section('title', 'Mi Perfil')
+@section('title')
+    Mi Perfil
+@endsection
 
 @section('content')
 <div
@@ -14,7 +16,10 @@
     showNew: false,
     showConfirm: false,
     showDeleteConfirm: false,
-    showAvatarButtons: false
+    showAvatarButtons: false,
+    currentVal: '',
+    newVal: '',
+    confirmVal: ''
   }"
   class="bg-gray-100 min-h-screen"
 >
@@ -198,17 +203,23 @@
               </label>
               <div class="relative">
                 <input
+                  x-ref="current_password"
+                  x-model="currentVal"
                   :type="showCurrent ? 'text' : 'password'"
                   name="current_password"
                   id="current_password"
-                  value="{{ old('current_password') }}"
                   class="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
                   required
                 >
                 <button
                   type="button"
-                  @click="showCurrent = !showCurrent"
-                  class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-700 transition-opacity opacity-0 focus:opacity-100"
+                  x-show="currentVal.length > 0"
+                  x-cloak
+                  @mousedown.prevent
+                  @click="showCurrent = !showCurrent; $nextTick(()=>{ $refs.current_password.blur(); $event.currentTarget.blur(); })"
+                  class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-700 transition"
+                  tabindex="-1"
+                  aria-label="Mostrar contraseña actual"
                 >
                   <i :class="showCurrent ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
                 </button>
@@ -225,17 +236,23 @@
               </label>
               <div class="relative">
                 <input
+                  x-ref="new_password"
+                  x-model="newVal"
                   :type="showNew ? 'text' : 'password'"
                   name="password"
                   id="password"
-                  value="{{ old('password') }}"
                   class="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
                   required
                 >
                 <button
                   type="button"
-                  @click="showNew = !showNew"
-                  class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-700 transition-opacity opacity-0 focus:opacity-100"
+                  x-show="newVal.length > 0"
+                  x-cloak
+                  @mousedown.prevent
+                  @click="showNew = !showNew; $nextTick(()=>{ $refs.new_password.blur(); $event.currentTarget.blur(); })"
+                  class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-700 transition"
+                  tabindex="-1"
+                  aria-label="Mostrar nueva contraseña"
                 >
                   <i :class="showNew ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
                 </button>
@@ -252,17 +269,23 @@
               </label>
               <div class="relative">
                 <input
+                  x-ref="confirm_password"
+                  x-model="confirmVal"
                   :type="showConfirm ? 'text' : 'password'"
                   name="password_confirmation"
                   id="password_confirmation"
-                  value="{{ old('password_confirmation') }}"
                   class="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
                   required
                 >
                 <button
                   type="button"
-                  @click="showConfirm = !showConfirm"
-                  class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-700 transition-opacity opacity-0 focus:opacity-100"
+                  x-show="confirmVal.length > 0"
+                  x-cloak
+                  @mousedown.prevent
+                  @click="showConfirm = !showConfirm; $nextTick(()=>{ $refs.confirm_password.blur(); $event.currentTarget.blur(); })"
+                  class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-700 transition"
+                  tabindex="-1"
+                  aria-label="Mostrar confirmar contraseña"
                 >
                   <i :class="showConfirm ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
                 </button>

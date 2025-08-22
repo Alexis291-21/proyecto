@@ -72,12 +72,12 @@ class ProfileController extends Controller
             $request->all(),
             [
                 'current_password'      => ['required', 'current_password'],
-                'password'              => ['required', 'string', 'min:12', 'confirmed'],
+                'password'              => ['required', 'string', 'min:8', 'confirmed'],
                 'password_confirmation' => ['required'],
             ],
             [
                 'current_password.current_password' => 'La contraseña actual es incorrecta.',
-                'password.min'                      => 'La nueva contraseña debe tener al menos 12 caracteres.',
+                'password.min'                      => 'La nueva contraseña debe tener al menos 8 caracteres.',
                 'password.confirmed'                => 'Las credenciales no coinciden.',
                 'password_confirmation.required'    => 'Debes confirmar la contraseña.',
             ]
@@ -114,7 +114,7 @@ class ProfileController extends Controller
                 'avatar.required' => 'Debes seleccionar una imagen.',
                 'avatar.image'    => 'El archivo debe ser una imagen.',
                 'avatar.mimes'    => 'El avatar debe ser jpg, jpeg o png.',
-                'avatar.max'      => 'El avatar no puede superar los 2 MB.',
+                'avatar.max'      => 'El avatar no puede superar los 2 MB.',
             ]
         );
 

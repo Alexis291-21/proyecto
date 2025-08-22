@@ -194,7 +194,14 @@ $(function(){
         dom: '<"flex justify-between items-center mb-2"lf>rt<"flex justify-between items-center mt-4"ip><"clear">',
         ordering: false,
         buttons: [
-            { extend: 'excelHtml5', exportOptions: { columns: [0,1,2,3,4] }, className: 'd-none' },
+            {
+                extend: 'excelHtml5',
+                title: '',
+                filename: 'Medicos',
+                exportOptions: { columns: [0,1,2,3,4] },
+                className: 'd-none',
+                customizeData: d => d.header[0][0] = 'Médicos'
+            },
             { extend: 'pdfHtml5',   exportOptions: { columns: [0,1,2,3,4] }, className: 'd-none' }
         ],
         language: {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -30,13 +31,33 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $rules = [
             'nombre'   => 'required|string|max:255',
             'apellido' => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8',
+            'email'    => 'required|email|max:100|unique:users,email',
+            // aquí cambié min:8 -> min:4
+            'password' => 'required|string|min:4',
             'rol'      => 'required|in:recepcionista,medico,admin',
-        ]);
+        ];
+
+        $messages = [
+            'email.email'  => 'El correo electrónico debe tener un formato válido.',
+            'email.max'    => 'El correo electrónico no puede exceder 100 caracteres.',
+            'email.unique' => 'El correo electrónico ya está en uso. Elige otro.',
+            // actualicé el mensaje a 4 caracteres
+            'password.min' => 'La contraseña debe tener al menos 4 caracteres.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            // Redirigimos con errores y con todos los inputs (incluye password)
+            return redirect()->route('usuarios.index')
+                             ->withErrors($validator)
+                             ->withInput($request->all());
+        }
+
+        $data = $validator->validated();
 
         User::create([
             'name'     => $data['nombre'] . ' ' . $data['apellido'],
@@ -54,12 +75,20 @@ class UserController extends Controller
      */
     public function update(Request $request, User $usuario)
     {
-        $data = $request->validate([
+        $rules = [
             'nombre'   => 'required|string|max:255',
             'apellido' => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email,' . $usuario->id,
+            'email'    => 'required|email|max:100|unique:users,email,' . $usuario->id,
             'rol'      => 'required|in:recepcionista,medico,admin',
-        ]);
+        ];
+
+        $messages = [
+            'email.email' => 'El correo electrónico debe tener un formato válido.',
+            'email.max'   => 'El correo electrónico no puede exceder 100 caracteres.',
+            'email.unique'=> 'El correo electrónico ya está en uso. Elige otro.',
+        ];
+
+        $data = $request->validate($rules, $messages);
 
         $usuario->update([
             'name'  => $data['nombre'] . ' ' . $data['apellido'],
